@@ -1,8 +1,8 @@
 package org.luckgg.currencyexchange.domain.model
 
 import androidx.compose.ui.graphics.Color
-import org.luckgg.currencyexchange.ui.theme.freshColor
-import org.luckgg.currencyexchange.ui.theme.staleColor
+import freshColor
+import staleColor
 
 enum class RateStatus(
     val title: String,

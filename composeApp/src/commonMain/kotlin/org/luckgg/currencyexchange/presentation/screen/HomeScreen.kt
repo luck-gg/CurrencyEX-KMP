@@ -14,8 +14,9 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import org.luckgg.currencyexchange.domain.model.CurrencyType
 import org.luckgg.currencyexchange.presentation.component.CurrencyPickerDialog
+import org.luckgg.currencyexchange.presentation.component.HomeBody
 import org.luckgg.currencyexchange.presentation.component.HomeHeader
-import org.luckgg.currencyexchange.ui.theme.surfaceColor
+import surfaceColor
 
 class HomeScreen : Screen {
     @Composable
@@ -84,11 +85,11 @@ class HomeScreen : Screen {
                     dialogOpened = true
                 },
             )
-//            HomeBody(
-//                source = sourceCurrency,
-//                target = targetCurrency,
-//                amount = amount
-//            )
+            HomeBody(
+                source = sourceCurrency,
+                target = targetCurrency,
+                amount = amount,
+            )
         }
     }
 }

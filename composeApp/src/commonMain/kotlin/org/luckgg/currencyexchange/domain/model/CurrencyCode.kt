@@ -1,5 +1,3 @@
-@file:Suppress("ktlint:standard:no-wildcard-imports")
-
 package org.luckgg.currencyexchange.domain.model
 
 import currencyexappproject.composeapp.generated.resources.*

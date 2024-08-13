@@ -1,5 +1,3 @@
-package org.luckgg.currencyexchange
-
 interface Platform {
     val name: String
 }

@@ -19,11 +19,38 @@ import org.luckgg.currencyexchange.domain.model.RequestState
 class CurrencyApiServiceImpl(
     private val preferences: PreferencesRepository,
 ) : CurrencyApiService {
-    override suspend fun getLatestRates(): RequestState<List<Currency>> =
+    companion object {
+        const val ENDPOINT = "https://api.currencyapi.com/v3/latest"
+        const val API_KEY = "cur_live_uZ9hYr7GlNBb2iEWp8tUejU7yLx7u6oZq6B4iskn"
+    }
+
+    private val httpClient =
+        HttpClient {
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        prettyPrint = true
+                        isLenient = true
+                        ignoreUnknownKeys = true
+                    },
+                )
+            }
+            install(HttpTimeout) {
+                requestTimeoutMillis = 15000
+            }
+            install(DefaultRequest) {
+                headers {
+                    append("apikey", API_KEY)
+                }
+            }
+        }
+
+    override suspend fun getLatestExchangeRates(): RequestState<List<Currency>> =
         try {
-            val response = client.get(BASE_URL)
+            val response = httpClient.get(ENDPOINT)
             if (response.status.value == 200) {
                 val apiResponse = Json.decodeFromString<ApiResponse>(response.body())
+
                 val availableCurrencyCodes =
                     apiResponse.data.keys
                         .filter {
@@ -39,7 +66,8 @@ class CurrencyApiServiceImpl(
                             availableCurrencyCodes.contains(currency.code)
                         }
 
-                val lastUpdated = apiResponse.meta.lastUpdated
+                // Persist a timestamp
+                val lastUpdated = apiResponse.meta.lastUpdatedAt
                 preferences.saveLastUpdated(lastUpdated)
 
                 RequestState.Success(data = availableCurrencies)
@@ -49,30 +77,4 @@ class CurrencyApiServiceImpl(
         } catch (e: Exception) {
             RequestState.Error(message = e.message.toString())
         }
-
-    private val client =
-        HttpClient {
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        prettyPrint = true
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                    },
-                )
-            }
-            install(HttpTimeout) {
-                requestTimeoutMillis = 15000L
-            }
-            install(DefaultRequest) {
-                headers {
-                    append("apikey", API_KEY)
-                }
-            }
-        }
-
-    companion object {
-        private const val BASE_URL = "https://api.currencyapi.com/v3/latest"
-        private const val API_KEY = "cur_live_uZ9hYr7GlNBb2iEWp8tUejU7yLx7u6oZq6B4iskn"
-    }
 }

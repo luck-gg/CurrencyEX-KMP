@@ -1,9 +1,13 @@
 package org.luckgg.currencyexchange.presentation.component
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -26,11 +30,10 @@ import androidx.compose.ui.unit.dp
 import org.luckgg.currencyexchange.domain.model.Currency
 import org.luckgg.currencyexchange.domain.model.CurrencyCode
 import org.luckgg.currencyexchange.domain.model.CurrencyType
-import org.luckgg.currencyexchange.ui.theme.primaryColor
-import org.luckgg.currencyexchange.ui.theme.surfaceColor
-import org.luckgg.currencyexchange.ui.theme.textColor
+import primaryColor
+import surfaceColor
+import textColor
 
-@Suppress("ktlint:standard:function-naming")
 @Composable
 fun CurrencyPickerDialog(
     currencies: List<Currency>,
@@ -113,31 +116,32 @@ fun CurrencyPickerDialog(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-//                AnimatedContent(
-//                    targetState = allCurrencies
-//                ) { availableCurrencies ->
-//                    if (availableCurrencies.isNotEmpty()) {
-//                        LazyColumn(
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .height(250.dp),
-//                            verticalArrangement = Arrangement.spacedBy(8.dp)
-//                        ) {
-//                            items(
-//                                items = availableCurrencies,
-//                                key = { it._id.toHexString() }
-//                            ) {currency ->
-//                                CurrencyCodePickerView(
-//                                    code = CurrencyCode.valueOf(currency.code),
-//                                    isSelected = selectedCurrencyCode.name == currency.code,
-//                                    onSelect = { selectedCurrencyCode = it }
-//                                )
-//                            }
-//                        }
-//                    } else {
-//                        ErrorScreen(modifier = Modifier.height(250.dp))
-//                    }
-//                }
+                AnimatedContent(
+                    targetState = allCurrencies,
+                ) { availableCurrencies ->
+                    if (availableCurrencies.isNotEmpty()) {
+                        LazyColumn(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(250.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            items(
+                                items = availableCurrencies,
+                                key = { it._id.toHexString() },
+                            ) { currency ->
+                                CurrencyCodePickerView(
+                                    code = CurrencyCode.valueOf(currency.code),
+                                    isSelected = selectedCurrencyCode.name == currency.code,
+                                    onSelect = { selectedCurrencyCode = it },
+                                )
+                            }
+                        }
+                    } else {
+                        ErrorScreen(modifier = Modifier.height(250.dp))
+                    }
+                }
             }
         },
         onDismissRequest = onDismiss,
