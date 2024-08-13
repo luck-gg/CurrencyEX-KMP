@@ -1,20 +1,17 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.realm.plugin)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.realm.plugin)
 }
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "11"
+            }
         }
     }
 
@@ -32,7 +29,7 @@ kotlin {
     sourceSets {
 
         androidMain.dependencies {
-            implementation(compose.preview)
+            implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
 
             implementation(libs.ktor.client.android)
@@ -40,31 +37,36 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material)
+            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(libs.multiplatform.settings.no.arg)
-            implementation(libs.multiplatform.settings.coroutines)
-            implementation(libs.koin.core)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.kotlinx.json)
-            implementation(libs.ktor.client.core)
 
+            implementation(libs.koin.core)
             implementation(libs.voyager.navigator)
+            implementation(libs.voyager.screen.model)
             implementation(libs.voyager.transitions)
-            implementation(libs.voyager.screenmodel)
             implementation(libs.voyager.koin)
 
-            implementation(libs.stately.common)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+
             implementation(libs.kotlinx.datetime)
+
+            implementation(libs.multiplatform.settings.no.arg)
+            implementation(libs.multiplatform.settings.coroutines)
+
             implementation(libs.mongodb.realm)
             implementation(libs.kotlin.coroutines)
+            implementation(libs.stately.common)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
     }
+
+    task("testClasses") {}
 }
 
 android {
@@ -105,10 +107,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    buildFeatures {
-        compose = true
-    }
     dependencies {
-        debugImplementation(compose.uiTooling)
+        debugImplementation(libs.compose.ui.tooling)
     }
+}
+dependencies {
+    implementation(libs.androidx.material3.android)
 }
